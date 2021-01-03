@@ -4,25 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NO-MATO SAUCE - Payu's Kitchen</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
-
-
         html {
             font-family: sans-serif;
-    font-size: 100%;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-}
+            font-size: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
         .hero {
             text-align: center;
             padding: 60px;
         }
-
         .header {
             background-color: #d8d8d8;
             line-height: 1.2em;
@@ -35,7 +32,6 @@ body {
             background-color: lightgreen;
             font-weight: bold;
         }
-
         .main-logo {
             display: block;
             margin: 0 auto 30px;
@@ -46,17 +42,65 @@ body {
 <body>
     <div class="header">Nightshade&#8209;Free &mdash; Lectin&#8209;Free &mdash; Gluten&#8209;Free &mdash; Organic &mdash; Small&#8209;Batch</div>
     <div class="hero">
+        <h2></h2>
         <img class="main-logo" src="images/nomato.svg" alt="Main NOMATO sauce logo">
         <div>
             <!-- https://www.pngkey.com/maxpic/u2q8q8u2a9o0t4i1/ - not for commercial use so replace later -->
             <img src="images/masonjar.png" alt="Main NOMATO sauce logo" width="200px">
         </div>
 
-        <div>
-            <button class="cta">Buy</button>
+        <div style="margin-top:30px">
+            <!-- Create a button that your customers click to complete their purchase. Customize the styling to suit your branding. -->
+            <button
+                style="background-color:#6772E5;color:#FFF;padding:8px 12px;border:0;border-radius:4px;font-size:1em"
+                id="checkout-button-price_1I5fDVC7PLdIiEp2lxgd21Vb"
+                role="link"
+                type="button"
+            >
+            Checkout
+            </button>
+
+            <div id="error-message"></div>
+            <div class="info"></div>
         </div>
     </div>
-    <div class="info">
-    </div>
 </body>
+
+<script>
+    (function() {
+      var stripe = Stripe('pk_test_51I4ILXC7PLdIiEp2nKwig5ttP8bMcnvg5RZtabfnmfDnSg5O24fn4P2evvMnGIVDuvRDNyI28RhE1KwyMaw9JWLm0023ASiI2B');
+    
+      var checkoutButton = document.getElementById('checkout-button-price_1I5fDVC7PLdIiEp2lxgd21Vb');
+      checkoutButton.addEventListener('click', function () {
+        /*
+         * When the customer clicks on the button, redirect
+         * them to Checkout.
+         */
+        stripe.redirectToCheckout({
+          lineItems: [{price: 'price_1I5fDVC7PLdIiEp2lxgd21Vb', quantity: 1}],
+          mode: 'payment',
+          /*
+           * Do not rely on the redirect to the successUrl for fulfilling
+           * purchases, customers may not always reach the success_url after
+           * a successful payment.
+           * Instead use one of the strategies described in
+           * https://stripe.com/docs/payments/checkout/fulfill-orders
+           */
+          successUrl: 'https://nomatosauce.netlify.app/success',
+          cancelUrl: 'https://nomatosauce.netlify.app/canceled',
+        })
+        .then(function (result) {
+          if (result.error) {
+            /*
+             * If `redirectToCheckout` fails due to a browser or network
+             * error, display the localized error message to your customer.
+             */
+            var displayError = document.getElementById('error-message');
+            displayError.textContent = result.error.message;
+          }
+        });
+      });
+    })();
+</script>
+
 </html>
